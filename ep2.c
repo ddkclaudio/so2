@@ -3,6 +3,8 @@
  * 7158472 -- Cláudio Fenandes da Silva Filho
 */
 
+// https://www.youtube.com/watch?v=QLOY6s53-5k
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -16,6 +18,7 @@
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_barrier_t barrier;
+int track, cics, laps;
 
 typedef struct cyc {
     int id;
@@ -49,11 +52,13 @@ int in_breaking(int cyclist_index){
 void *Cyc_Thread(void *args){
     cyclist cyc = *((cyclist*) args);
     printf("%d\n", cyc.id);
+    while(cyc.lap <= laps){
+        pthread_mutex_lock(&mutex);
 
-    pthread_mutex_lock(&mutex);
-    // todo
+        
 
-    pthread_mutex_unlock(&mutex);
+        pthread_mutex_unlock(&mutex);
+    }
     pthread_barrier_wait(&barrier);
 }
 
@@ -63,7 +68,6 @@ int ** criar_pista(int track);
 void liberar_pista(int** pista,int track);
 
 int main (int argc, const char * argv) {
-    int track, cics, laps;
     int r; // ative essa linha para 3 warnings a menos no  compilador
     r = scanf("%d", &track); // tamanho da pista
     r = scanf("%d", &cics);  // qtde de ciclistas
