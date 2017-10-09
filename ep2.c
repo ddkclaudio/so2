@@ -54,9 +54,7 @@ void *Cyc_Thread(void *args){
     printf("%d\n", cyc.id);
     while(cyc.lap <= laps){
         pthread_mutex_lock(&mutex);
-
-        
-
+        cyc.lap++;
         pthread_mutex_unlock(&mutex);
     }
     pthread_barrier_wait(&barrier);
