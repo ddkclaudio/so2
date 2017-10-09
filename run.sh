@@ -1,3 +1,3 @@
 clear
 make
-./ep2 < data
+./ep2 < data.txt
