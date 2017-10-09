@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <unistd.h>
 
 #define TRUE 1
 #define FALSE 0
@@ -44,9 +45,16 @@ int in_breaking(int cyclist_index){
     return TRUE;
 }
 
-void *Cyc_Thread(void *args)
-{
 
+void *Cyc_Thread(void *args){
+    cyclist cyc = *((cyclist*) args);
+    printf("%d\n", cyc.id);
+
+    pthread_mutex_lock(&mutex);
+    // todo
+
+    pthread_mutex_unlock(&mutex);
+    pthread_barrier_wait(&barrier);
 }
 
 // Interfaces
@@ -65,8 +73,8 @@ int main (int argc, const char * argv) {
     r           = pthread_barrier_init(&barrier, NULL, cics);
     ciclistas   = create_cyclist(cics);
 
-
-
+    for (r = 0; r < cics; r++)
+        pthread_join(ciclistas[r].c_thread, NULL);
 
     // ================= [ END ] ===============
     err_check(track, cics, laps);
@@ -130,7 +138,7 @@ cyclist* create_cyclist(int cics){
         list_cyc[i].track = i%10;
         list_cyc[i].broken = 0;
         list_cyc[i].points = 0;
-        rc = pthread_create(&list_cyc[i].c_thread, NULL, Cyc_Thread, NULL);
+        rc = pthread_create(&list_cyc[i].c_thread, NULL, Cyc_Thread, (void *) &list_cyc[i]);
     }
 
     if (list_cyc == NULL) {
@@ -148,7 +156,6 @@ void liberar_pista(int** pista,int track){
 }
 
 int rand_velocity(int last_velocity){
-    int tmp = rand() % 10;
     int percent;
 
     if (last_velocity == 30)
@@ -156,7 +163,7 @@ int rand_velocity(int last_velocity){
     else
         percent = 4;
 
-    if (tmp > percent)
+    if (rand() % 10 > percent)
         return 60;
     else
         return 30;
